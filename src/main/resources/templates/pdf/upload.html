@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>문서 추출 및 문서 파일 변환</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body>
+        <div class="mx-auto max-w-7xl py-24 sm:px-6 sm:py-32 lg:px-8">
+            <div class="max-w-sm mx-auto">
+                <form>
+                    <div class="space-y-12">
+                        <div class="border-b border-gray-900/10 pb-12">
+                            <h2 class="text-base/7 font-semibold text-gray-900">
+                                문서 추출 및 문서 파일 변환
+                            </h2>
+                            <p class="mt-1 text-sm/6 text-gray-600">
+                                아래에 추출할 문서를 입력하고 추출된 정보로
+                                문서를 만드세요.
+                            </p>
+
+                            <div
+                                class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6"
+                            >
+                                <div class="col-span-full">
+                                    <label
+                                        for="cover-photo"
+                                        class="block text-sm/6 font-medium text-gray-900"
+                                        >문서 입력</label
+                                    >
+                                    <div
+                                        id="file-drop-zone"
+                                        class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+                                    >
+                                        <div class="text-center">
+                                            <svg
+                                                class="mx-auto size-12 text-gray-300"
+                                                viewBox="0 0 24 24"
+                                                fill="currentColor"
+                                                aria-hidden="true"
+                                                data-slot="icon"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                                    clip-rule="evenodd"
+                                                />
+                                            </svg>
+                                            <div
+                                                class="mt-4 flex text-sm/6 text-gray-600"
+                                            >
+                                                <label
+                                                    for="file-upload"
+                                                    class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                                                >
+                                                    <span>파일 업로드</span>
+                                                    <input
+                                                        id="file-upload"
+                                                        name="file-upload"
+                                                        type="file"
+                                                        class="sr-only"
+                                                    />
+                                                </label>
+                                                <p class="pl-1">
+                                                    또는 여기로 드래그 하세요.
+                                                </p>
+                                            </div>
+                                            <p class="text-xs/5 text-gray-600">
+                                                파일 용량은 10MB 까지
+                                                가능합니다.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            id="resultDiv"
+                            class="border-b border-gray-900/10 pb-12"
+                        >
+                            <h2 class="text-base/7 font-semibold text-gray-900">
+                                추출 위임자 정보
+                            </h2>
+                            <p class="mt-1 text-sm/6 text-gray-600">
+                                아래에 위임자 정보를 확인하고 수정후에 PDF
+                                생성을 하세요.
+                            </p>
+                            <div
+                                class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6"
+                            >
+                                <div class="sm:col-span-4">
+                                    <label
+                                        for="성명"
+                                        class="block text-sm/6 font-medium text-gray-900"
+                                        >성명</label
+                                    >
+                                    <div class="mt-2">
+                                        <div
+                                            class="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600"
+                                        >
+                                            <input
+                                                type="text"
+                                                name="성명"
+                                                id="성명"
+                                                class="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="sm:col-span-4">
+                                    <label
+                                        for="주민등록번호"
+                                        class="block text-sm/6 font-medium text-gray-900"
+                                        >주민등록번호</label
+                                    >
+                                    <div class="mt-2">
+                                        <div
+                                            class="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600"
+                                        >
+                                            <input
+                                                type="text"
+                                                name="주민등록번호"
+                                                id="주민등록번호"
+                                                class="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        id="saveDiv"
+                        class="mt-6 flex items-center justify-end gap-x-6"
+                    >
+                        <button
+                            id="pdfDownloadBtn"
+                            type="button"
+                            class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                            위의 내용으로 PDF 생성
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            const EXTRACT_STRING_1 = "성명";
+            const EXTRACT_STRING_2 = "주민등록번호";
+            const extractEle1 = document.getElementById(EXTRACT_STRING_1);
+            const extractEle2 = document.getElementById(EXTRACT_STRING_2);
+            const resultDivEle = document.getElementById("resultDiv");
+            const saveDivEle = document.getElementById("saveDiv");
+            resultDivEle.style.display = "none";
+            saveDivEle.style.display = "none";
+
+            const fileUpload = async (file) => {
+                if (!file) return;
+
+                extractEle1.value = "";
+                extractEle2.value = "";
+                extractEle1.setAttribute("disabled", true);
+                extractEle2.setAttribute("disabled", true);
+                resultDivEle.classList.add("animate-pulse");
+                resultDivEle.style.display = "block";
+                saveDivEle.style.display = "none";
+
+                // setTimeout(async () => {
+                const formData = new FormData();
+                formData.append("file", file);
+
+                const res = await fetch("/pdf/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+                if (res.ok) {
+                    const json = await res.json();
+
+                    extractEle1.value = json[EXTRACT_STRING_1];
+                    extractEle2.value = json[EXTRACT_STRING_2];
+                    extractEle1.removeAttribute("disabled");
+                    extractEle2.removeAttribute("disabled");
+                    resultDivEle.classList.remove("animate-pulse");
+                    saveDivEle.style.display = "block";
+                }
+                // }, 3000);
+            };
+
+            const fileUploadEle = document.getElementById("file-upload");
+            fileUploadEle.addEventListener("change", async (ev) => {
+                await fileUpload(ev.target.files[0]);
+                fileUploadEle.value = null;
+            });
+
+            const fileDropZoneEle = document.getElementById("file-drop-zone");
+            fileDropZoneEle.addEventListener("drop", (ev) => {
+                ev.preventDefault();
+                fileUpload(ev.dataTransfer.files[0]);
+            });
+            fileDropZoneEle.addEventListener("dragover", (ev) => {
+                ev.preventDefault();
+            });
+
+            document
+                .getElementById("pdfDownloadBtn")
+                .addEventListener("click", async () => {
+                    const res = await fetch("/pdf/download", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            name: extractEle1.value,
+                            jumin: extractEle2.value,
+                        }),
+                    });
+                    if (res.ok) {
+                        const blob = await res.blob();
+                        console.log(blob);
+                        var url = window.URL.createObjectURL(blob);
+                        console.log(url);
+                        var a = document.createElement("a");
+                        a.href = url;
+                        a.download = `일반위임장(${extractEle1.value}).pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                    }
+                });
+        </script>
+    </body>
+</html>

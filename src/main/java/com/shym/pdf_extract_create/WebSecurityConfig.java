@@ -1,0 +1,23 @@
+package com.shym.pdf_extract_create;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests((requests) -> requests.requestMatchers("/", "/images/**")
+                .permitAll().anyRequest().authenticated())
+                .formLogin((form) -> form.loginPage("/login").permitAll()
+                        .defaultSuccessUrl("/pdf/upload", true))
+                .logout((logout) -> logout.logoutUrl("/logout").permitAll())
+                .csrf(csrf -> csrf.disable());
+
+        return http.build();
+    }
+}

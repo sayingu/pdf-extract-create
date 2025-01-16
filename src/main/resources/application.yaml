@@ -1,0 +1,14 @@
+spring:
+    config:
+        import: optional:classpath:secret.yaml
+    security:
+        user:
+            name: sunw-nurse-test
+            password: 111
+    servlet.multipart:
+        max-file-size: 10MB
+        max-request-size: 10MB
+    ai:
+        openai:
+            api-key:
+            chat.options.model: gpt-4o-mini
