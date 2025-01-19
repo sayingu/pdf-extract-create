@@ -1,16 +1,26 @@
 package com.shym.pdf_extract_create;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -66,7 +76,6 @@ public class PdfService {
 
             PDType0Font font = PDType0Font.load(document,
                     new ClassPathResource("/static/samples/malgun.ttf").getFile());
-
             contentStream.setFont(font, 12);
             contentStream.beginText();
             contentStream.newLineAtOffset(220, 625);
@@ -76,6 +85,11 @@ public class PdfService {
             contentStream.newLineAtOffset(220, 605);
             contentStream.showText(input.getJumin());
             contentStream.endText();
+
+            PDImageXObject pdImage = PDImageXObject.createFromByteArray(document,
+                    createStampImage(input.getName()), null);
+            contentStream.drawImage(pdImage, 430, 40, 80, 80);
+
             contentStream.close();
 
             document.save(outputStream);
@@ -90,5 +104,52 @@ public class PdfService {
         }
 
         return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
+    private byte[] createStampImage(String name) {
+        int imageSize = 200;
+        int fontSize = 84;
+        int strokeSize = Math.round(fontSize / 10);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        
+        try {
+            BufferedImage image =
+                    new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = image.createGraphics();
+
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+
+            g2d.setComposite(AlphaComposite.Clear);
+            g2d.fillRect(0, 0, imageSize, imageSize);
+            g2d.setComposite(AlphaComposite.Src);
+
+            g2d.setColor(Color.RED);
+            g2d.setStroke(new BasicStroke(strokeSize));
+            g2d.drawRect(10, 10, imageSize - 20, imageSize - 20);
+
+            g2d.setFont(new Font("Batang", Font.BOLD, 80));
+            FontMetrics metrics = g2d.getFontMetrics();
+            String formattedName = name + "인";
+
+            int lineHeight = metrics.getAscent() + metrics.getDescent();
+            int totalTextHeight = lineHeight * 2;
+            int startY = (imageSize - totalTextHeight) / 3 + lineHeight;
+
+            for (int i = 0; i < formattedName.length(); i += 2) {
+                String line = formattedName.substring(i, Math.min(i + 2, formattedName.length()));
+                int textWidth = metrics.stringWidth(line);
+                int x = (imageSize - textWidth) / 2 + (strokeSize / 2);
+                int y = startY + (i / 2) * lineHeight;
+                g2d.drawString(line, x, y);
+            }
+            g2d.dispose();
+            ImageIO.write(image, "png", baos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return baos.toByteArray();
     }
 }

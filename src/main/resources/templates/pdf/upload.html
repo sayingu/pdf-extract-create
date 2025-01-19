@@ -219,7 +219,7 @@
                             jumin: extractEle2.value,
                         }),
                     });
-                    if (res.ok) {
+                    if (res.ok && res.status === 200) {
                         const blob = await res.blob();
                         console.log(blob);
                         var url = window.URL.createObjectURL(blob);
