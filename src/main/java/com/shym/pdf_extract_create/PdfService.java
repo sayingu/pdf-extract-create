@@ -26,6 +26,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class PdfService {
     @Autowired
-    private OpenAiChatModel chatModel;
+    private OpenAiChatModel openAiChatModel;
+
+    @Autowired
+    private OllamaChatModel ollamaChatModel;
 
     public List<Document> loadText(PdfUploadDto input) {
-        TikaDocumentReader tikaDocumentReader =
-                new TikaDocumentReader(input.getFile().getResource());
+        TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(input.getFile().getResource());
         return tikaDocumentReader.read();
     }
 
@@ -49,13 +52,18 @@ public class PdfService {
         final String EXTRACT_STRING_1 = "성명";
         final String EXTRACT_STRING_2 = "주민등록번호";
 
+        final String SYSTEM_PROMPT = String.format(
+                "한글로 작성된 문서에서 특정 데이터를 추출하길 원해, 다음 위임장에서 위임자의 %s, %s를 |로 분리해서 반환해줘. 만약, 추출할수 없을경우에는 빈 문자열로 |를 포함해서 반환해줘.",
+                EXTRACT_STRING_1, EXTRACT_STRING_2);
+        System.out.println(SYSTEM_PROMPT);
+
         Document doc = documentList.get(0);
-        ChatResponse response = chatModel.call(new Prompt(
-                new SystemMessage(
-                        String.format("문서에서 특정 데이터를 추출하길 원해, 다음 위임장에서 위임자의 %s, %s를 |로 분리해서 반환해줘",
-                                EXTRACT_STRING_1, EXTRACT_STRING_2)),
-                new UserMessage(doc.getContent())));
+        System.out.println(doc.getContent());
+
+        ChatResponse response = openAiChatModel.call(
+                new Prompt(new SystemMessage(SYSTEM_PROMPT), new UserMessage(doc.getContent())));
         String textContent = response.getResult().getOutput().getContent();
+        System.out.println(textContent);
         String[] textContentArr = textContent.split("\\|");
 
         returnMap.put(EXTRACT_STRING_1, textContentArr[0]);
@@ -110,12 +118,11 @@ public class PdfService {
         int imageSize = 200;
         int fontSize = 84;
         int strokeSize = Math.round(fontSize / 10);
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        
+
         try {
-            BufferedImage image =
-                    new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage image = new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = image.createGraphics();
 
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

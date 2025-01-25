@@ -12,3 +12,4 @@ spring:
         openai:
             api-key:
             chat.options.model: gpt-4o-mini
+        ollama.chat.options.model: llama3.3

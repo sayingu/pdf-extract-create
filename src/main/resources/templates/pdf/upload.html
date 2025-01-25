@@ -219,17 +219,22 @@
                             jumin: extractEle2.value,
                         }),
                     });
-                    if (res.ok && res.status === 200) {
+                    if (res.redirected) {
+                        window.location.reload();
+                    } else if (
+                        res.ok &&
+                        res.headers.get("content-type") === "application/pdf"
+                    ) {
                         const blob = await res.blob();
-                        console.log(blob);
                         var url = window.URL.createObjectURL(blob);
-                        console.log(url);
                         var a = document.createElement("a");
                         a.href = url;
                         a.download = `일반위임장(${extractEle1.value}).pdf`;
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
+                    } else {
+                        alert("Download failed!");
                     }
                 });
         </script>
